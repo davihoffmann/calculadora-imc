@@ -6,6 +6,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   TextEditingController _pesoControler = TextEditingController();
   TextEditingController _alturaControler = TextEditingController();
 
@@ -32,51 +34,64 @@ class _HomePageState extends State<HomePage> {
   _body() {
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Icon(
-            Icons.person_outline,
-            size: 120,
-          ),
-          TextField(
-            controller: _pesoControler,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: "Peso (kg)",
-              labelStyle: TextStyle(color: Colors.black),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Icon(
+              Icons.person_outline,
+              size: 120,
             ),
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.black, fontSize: 25),
-          ),
-          TextField(
-            controller: _alturaControler,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: "Altura (cm)",
-              labelStyle: TextStyle(color: Colors.black),
-            ),
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.black, fontSize: 25),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 20),
-            height: 50,
-            child: RaisedButton(
-              onPressed: _culculate,
-              child: Text(
-                "Calcular",
-                style: TextStyle(color: Colors.white, fontSize: 25),
+            TextFormField(
+              validator: (value) {
+                if (value.isEmpty) {
+                  return "Insira seu peso";
+                }
+              },
+              controller: _pesoControler,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: "Peso (kg)",
+                labelStyle: TextStyle(color: Colors.black),
               ),
-              color: Colors.black,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.black, fontSize: 25),
             ),
-          ),
-          Text(
-            _info,
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.black, fontSize: 25),
-          ),
-        ],
+            TextFormField(
+              validator: (value) {
+                if (value.isEmpty) {
+                  return "Insira sua altura";
+                }
+              },
+              controller: _alturaControler,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: "Altura (cm)",
+                labelStyle: TextStyle(color: Colors.black),
+              ),
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.black, fontSize: 25),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 20),
+              height: 50,
+              child: RaisedButton(
+                onPressed: _culculate,
+                child: Text(
+                  "Calcular",
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
+                color: Colors.black,
+              ),
+            ),
+            Text(
+              _info,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.black, fontSize: 25),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -85,11 +100,16 @@ class _HomePageState extends State<HomePage> {
     _pesoControler.text = "";
     _alturaControler.text = "";
     setState(() {
+      _formKey = GlobalKey<FormState>();
       _info = "Informe seus dados";
     });
   }
 
   _culculate() {
+    if (!_formKey.currentState.validate()) {
+      return;
+    }
+
     setState(() {
       double peso = double.parse(_pesoControler.text);
       double altura = double.parse(_alturaControler.text) / 100;
@@ -98,20 +118,15 @@ class _HomePageState extends State<HomePage> {
 
       if (imc < 18.6) {
         _info = "Abaixo do Peso (${imc.toStringAsPrecision(3)})";
-      }
-      else if (imc >= 18.6 && imc < 24.9) {
+      } else if (imc >= 18.6 && imc < 24.9) {
         _info = "Peso Ideal (${imc.toStringAsPrecision(3)})";
-      }
-      else if (imc >= 24.9 && imc < 29.9) {
+      } else if (imc >= 24.9 && imc < 29.9) {
         _info = "Levemente Acima do Peso (${imc.toStringAsPrecision(3)})";
-      }
-      else if (imc >= 29.9 && imc < 34.9) {
+      } else if (imc >= 29.9 && imc < 34.9) {
         _info = "Obesidade Grau I (${imc.toStringAsPrecision(3)})";
-      }
-      else if (imc >= 34.9 && imc < 39.9) {
+      } else if (imc >= 34.9 && imc < 39.9) {
         _info = "Obesidade Grau II (${imc.toStringAsPrecision(3)})";
-      }
-      else if (imc >= 40) {
+      } else if (imc >= 40) {
         _info = "Obesidade Grau III (${imc.toStringAsPrecision(3)})";
       }
     });
