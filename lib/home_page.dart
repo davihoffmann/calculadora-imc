@@ -6,6 +6,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  TextEditingController _pesoControler = TextEditingController();
+  TextEditingController _alturaControler = TextEditingController();
+
+  String _info = "Informe seus dados";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +20,7 @@ class _HomePageState extends State<HomePage> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.refresh),
-            onPressed: () {},
+            onPressed: _resetFields,
           )
         ],
       ),
@@ -35,6 +40,7 @@ class _HomePageState extends State<HomePage> {
             size: 120,
           ),
           TextField(
+            controller: _pesoControler,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: "Peso (kg)",
@@ -44,6 +50,7 @@ class _HomePageState extends State<HomePage> {
             style: TextStyle(color: Colors.black, fontSize: 25),
           ),
           TextField(
+            controller: _alturaControler,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: "Altura (cm)",
@@ -56,7 +63,7 @@ class _HomePageState extends State<HomePage> {
             margin: EdgeInsets.only(top: 20),
             height: 50,
             child: RaisedButton(
-              onPressed: () {},
+              onPressed: _culculate,
               child: Text(
                 "Calcular",
                 style: TextStyle(color: Colors.white, fontSize: 25),
@@ -65,12 +72,48 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           Text(
-            "Info",
+            _info,
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.black, fontSize: 25),
           ),
         ],
       ),
     );
+  }
+
+  _resetFields() {
+    _pesoControler.text = "";
+    _alturaControler.text = "";
+    setState(() {
+      _info = "Informe seus dados";
+    });
+  }
+
+  _culculate() {
+    setState(() {
+      double peso = double.parse(_pesoControler.text);
+      double altura = double.parse(_alturaControler.text) / 100;
+      double imc = peso / (altura * altura);
+      print(imc);
+
+      if (imc < 18.6) {
+        _info = "Abaixo do Peso (${imc.toStringAsPrecision(3)})";
+      }
+      else if (imc >= 18.6 && imc < 24.9) {
+        _info = "Peso Ideal (${imc.toStringAsPrecision(3)})";
+      }
+      else if (imc >= 24.9 && imc < 29.9) {
+        _info = "Levemente Acima do Peso (${imc.toStringAsPrecision(3)})";
+      }
+      else if (imc >= 29.9 && imc < 34.9) {
+        _info = "Obesidade Grau I (${imc.toStringAsPrecision(3)})";
+      }
+      else if (imc >= 34.9 && imc < 39.9) {
+        _info = "Obesidade Grau II (${imc.toStringAsPrecision(3)})";
+      }
+      else if (imc >= 40) {
+        _info = "Obesidade Grau III (${imc.toStringAsPrecision(3)})";
+      }
+    });
   }
 }
